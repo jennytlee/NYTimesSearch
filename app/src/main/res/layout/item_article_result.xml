@@ -3,14 +3,14 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+    <com.etsy.android.grid.util.DynamicHeightImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/ivThumbnail"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/nytimes"
         android:scaleType="center"/>
 
-    <TextView
+    <com.etsy.android.grid.util.DynamicHeightTextView
         android:id="@+id/tvHeadline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

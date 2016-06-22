@@ -38,7 +38,7 @@ public class TopArticle implements Parcelable {
             JSONArray multimedia = jsonObject.getJSONArray("multimedia");
 
             if (multimedia.length() > 0) {
-                this.thumbnail = multimedia.getJSONObject(0).getString("url");
+                this.thumbnail = multimedia.getJSONObject(multimedia.length()-1).getString("url");
             } else {
                 this.thumbnail = "";
             }

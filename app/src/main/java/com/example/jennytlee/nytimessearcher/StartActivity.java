@@ -11,7 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.etsy.android.grid.StaggeredGridView;
+import com.example.jennytlee.nytimessearcher.adapters.ArticleAdapter;
 import com.example.jennytlee.nytimessearcher.adapters.TopArticleAdapter;
+import com.example.jennytlee.nytimessearcher.models.Article;
 import com.example.jennytlee.nytimessearcher.models.TopArticle;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -35,6 +37,11 @@ public class StartActivity extends AppCompatActivity {
     TopArticleAdapter topArticleAdapter;
     LinearLayoutManager linearLayoutManager;
 
+    ArrayList<Article> articles;
+    ArticleAdapter articleAdapter;
+
+
+
     public static final String API_KEY = "0be89842a4dc4f99ba0d5aa314659d4d";
 
     @Override
@@ -47,16 +54,15 @@ public class StartActivity extends AppCompatActivity {
 
         topArticles = new ArrayList<>();
         topArticleAdapter = new TopArticleAdapter(this, topArticles);
+        articles = new ArrayList<>();
+        articleAdapter = new ArticleAdapter(this, articles);
         linearLayoutManager = new LinearLayoutManager(this);
 
         gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
                 customLoadMoreDataFromApi(page);
-                // or customLoadMoreDataFromApi(totalItemsCount);
-                return true; // ONLY if more data is actually being loaded; false otherwise.
+                return true;
             }
         });
 
@@ -93,6 +99,53 @@ public class StartActivity extends AppCompatActivity {
                         topArticleAdapter.notifyDataSetChanged();
 
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    // Search articles
+    private void searchArticles(int page, final String query) {
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+
+        RequestParams params = new RequestParams();
+        params.put("api-key", API_KEY);
+        params.put("page", page);
+        params.put("q", query);
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                JSONArray articleJsonResults = null;
+
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+
+                    if (!topArticleAdapter.isEmpty()) {
+
+                        topArticleAdapter.clear();
+                    }
+                    gvTopArticles.setAdapter(articleAdapter);
+                    articleAdapter.addAll(Article.fromJSONArray(articleJsonResults));
+
+                    gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
+                        @Override
+                        public boolean onLoadMore(int page, int totalItemsCount) {
+                            customLoadMoreSearchResults(page, query);
+
+                            return true;
+                        }
+                    });
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -145,6 +198,42 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
+    // Append more data into the search adapter
+    public void customLoadMoreSearchResults(int offset, String query) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+        RequestParams params = new RequestParams();
+        params.put("api-key", API_KEY);
+        params.put("page", offset);
+        params.put("q", query);
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    JSONArray articleJsonResults;
+                    if (response != null) {
+                        articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                        ArrayList<Article> articles = Article.fromJSONArray(articleJsonResults);
+
+                        for (Article article : articles) {
+                            articleAdapter.add(article);
+                        }
+                        articleAdapter.notifyDataSetChanged();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -155,7 +244,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // perform query here
-
+                searchArticles(0, query);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
@@ -170,5 +259,7 @@ public class StartActivity extends AppCompatActivity {
         });
         return super.onCreateOptionsMenu(menu);
     }
+
+
 
 }
