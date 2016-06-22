@@ -16,7 +16,7 @@ The following **optional** features are implemented:
 
 * [x] Used the **ActionBar SearchView** or custom layout as the query box
 * [ ] User can **share an article link** to their friends or email it to themselves
-* [ ] Improved the user interface and experiment with image assets and/or styling and coloring
+* [x] Improved the user interface and experiment with image assets and/or styling and coloring
 * [ ] User can click on "settings" which allows selection of **advanced search options** to filter results
   * [ ] User can configure advanced search filters such as:
     * [ ] Begin Date (using a date picker)
@@ -27,11 +27,12 @@ The following **optional** features are implemented:
 * [ ] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
 * [x] Apply the popular [Butterknife annotation library](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) to reduce view boilerplate.
 * [x] Replace `GridView` with the [RecyclerView](http://guides.codepath.com/android/Using-the-RecyclerView) and the `StaggeredGridLayoutManager` to improve the grid of image results displayed
-* [ ] Replace Picasso with [Glide](http://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) for more efficient image rendering.
+* [x] Replace Picasso with [Glide](http://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) for more efficient image rendering.
 
 The following **additional** features are implemented:
 
 * Used the [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) library instead of RecyclerView for a more modern UI.
+* On startup, top articles are loaded.
 
 ## Video Walkthrough
 
@@ -43,13 +44,15 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+* Using multiple adapters, multiple article models for different article types.
 
 ## Open-source libraries used
 
 - [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
 - [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
 - [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) - Staggered Grid View, modified.
+- [Glide](https://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) - Better image loading
+- [Butterknife](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) - Reduced boilerplate.
 
 ## License
 
