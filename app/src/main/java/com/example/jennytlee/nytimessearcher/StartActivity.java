@@ -3,6 +3,7 @@ package com.example.jennytlee.nytimessearcher;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -34,6 +35,7 @@ import cz.msebera.android.httpclient.Header;
 public class StartActivity extends AppCompatActivity {
 
     @BindView(R.id.gvTopArticles) RecyclerView gvTopArticles;
+    @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
 
     ArrayList<TopArticle> topArticles;
     TopArticleAdapter topArticleAdapter;
@@ -53,9 +55,20 @@ public class StartActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setupViews();
-
-        // load top articles data on start
         loadArticles(0);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // load top articles data on start
+                loadArticles(0);
+            }
+        });
+
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
     }
 
@@ -109,6 +122,7 @@ public class StartActivity extends AppCompatActivity {
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                topArticleAdapter.clearData();
                 try {
                     JSONArray results;
                     if (response != null) {
@@ -124,6 +138,8 @@ public class StartActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                swipeContainer.setRefreshing(false);
+
             }
 
             @Override

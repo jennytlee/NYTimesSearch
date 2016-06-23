@@ -42,10 +42,12 @@ public class ArticleActivity extends AppCompatActivity {
         if (getIntent().getParcelableExtra("article") instanceof TopArticle) {
             TopArticle topArticle = getIntent().getParcelableExtra("article");
             wvArticle.loadUrl(topArticle.getWebUrl());
+
         } else {
             Article article = getIntent().getParcelableExtra("article");
             wvArticle.loadUrl(article.getWebUrl());
         }
+
 
     }
 

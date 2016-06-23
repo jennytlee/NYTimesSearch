@@ -4,5 +4,5 @@
     <string name="title_activity_start">StartActivity</string>
     <string name="search">Search</string>
     <string name="hint">Enter keywords here</string>
-    <string name="title_activity_article">Search Results</string>
+    <string name="title_activity_article">"New York Times"</string>
 </resources>
