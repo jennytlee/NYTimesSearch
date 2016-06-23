@@ -12,6 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by jennytlee on 6/21/16.
  */
+
 public class TopArticle implements Parcelable {
 
     public String webUrl;
@@ -40,7 +41,7 @@ public class TopArticle implements Parcelable {
             if (multimedia.length() > 0) {
                 this.thumbnail = multimedia.getJSONObject(multimedia.length()-1).getString("url");
             } else {
-                this.thumbnail = "";
+                this.thumbnail = "http://i.imgur.com/50NrOnW.png";
             }
 
         } catch (JSONException e) {

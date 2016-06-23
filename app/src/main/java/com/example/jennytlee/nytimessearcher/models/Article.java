@@ -41,7 +41,7 @@ public class Article implements Parcelable {
                 JSONObject multimediaJson = multimedia.getJSONObject(1);
                 this.thumbnail = String.format("http://www.nytimes.com/%s", multimediaJson.getString("url"));
             } else {
-                this.thumbnail = "";
+                this.thumbnail = "http://i.imgur.com/50NrOnW.png";
             }
 
         } catch (JSONException e) {

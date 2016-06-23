@@ -1,5 +1,6 @@
 package com.example.jennytlee.nytimessearcher;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.example.jennytlee.nytimessearcher.adapters.ArticleAdapter;
@@ -40,8 +43,6 @@ public class StartActivity extends AppCompatActivity {
     ArrayList<Article> articles;
     ArticleAdapter articleAdapter;
 
-
-
     public static final String API_KEY = "0be89842a4dc4f99ba0d5aa314659d4d";
 
     @Override
@@ -52,12 +53,23 @@ public class StartActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        setupViews();
+
+        // load top articles data on start
+        loadArticles(0);
+
+    }
+
+
+    // set up initial start page
+    public void setupViews() {
         topArticles = new ArrayList<>();
         topArticleAdapter = new TopArticleAdapter(this, topArticles);
         articles = new ArrayList<>();
         articleAdapter = new ArticleAdapter(this, articles);
         linearLayoutManager = new LinearLayoutManager(this);
 
+        // endless scroll listener for top articles
         gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
@@ -66,14 +78,27 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
+        // click listener for top articles
+        gvTopArticles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // create an intent to display
+                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+                // get the article to display
+                TopArticle topArticle = topArticles.get(position);
+                // pass in the article to intent
+                i.putExtra("article", topArticle);
+                // launch the activity
+                startActivity(i);
+            }
+        });
+
         // initialize adapter for top articles
         gvTopArticles.setAdapter(topArticleAdapter);
-
-        // load top articles data
-        loadArticles(0);
-
     }
 
+
+    // Load top articles on start up of the app
     private void loadArticles(int page) {
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -81,7 +106,6 @@ public class StartActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", page);
-
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -111,7 +135,7 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
-    // Search articles
+    // Search articles and replace the top articles / previous search results
     private void searchArticles(int page, final String query) {
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -130,19 +154,39 @@ public class StartActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
 
+                    // in case of replacing top articles, replace adapter
                     if (!topArticleAdapter.isEmpty()) {
-
                         topArticleAdapter.clear();
                     }
                     gvTopArticles.setAdapter(articleAdapter);
+                    // in case adapter is not empty, clear adapter (reset search)
+                    if (!articleAdapter.isEmpty()) {
+                        articleAdapter.clear();
+                    }
+
                     articleAdapter.addAll(Article.fromJSONArray(articleJsonResults));
 
+                    // endless scroll listener for searched articles
                     gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
                         @Override
                         public boolean onLoadMore(int page, int totalItemsCount) {
                             customLoadMoreSearchResults(page, query);
-
                             return true;
+                        }
+                    });
+
+                    // click listener for searched articles
+                    gvTopArticles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            // create an intent to display
+                            Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+                            // get the article to display
+                            Article article = articles.get(position);
+                            // pass in the article to intent
+                            i.putExtra("article", article);
+                            // launch the activity
+                            startActivity(i);
                         }
                     });
 
@@ -158,18 +202,13 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
-    // Append more data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
+    // Append more data into the top articles adapter
     public void customLoadMoreDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate data using the offset value as a parameter.
-        // Deserialize API response and then construct new objects to append to the adapter
-        // Add the new objects to the data source for the adapter
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.nytimes.com/svc/topstories/v2/home.json";
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", offset);
-
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -234,6 +273,7 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
+    // using the toolbar to search
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -245,8 +285,6 @@ public class StartActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 // perform query here
                 searchArticles(0, query);
-                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
-                // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
 
                 return true;

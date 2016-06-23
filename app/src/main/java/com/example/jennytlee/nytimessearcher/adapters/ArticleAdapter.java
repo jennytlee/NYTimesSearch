@@ -82,7 +82,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
     }
 
     private double getRandomHeightRatio() {
-        return (mRandom.nextDouble() / 2.0) + 1.0; // height will be 1.0 - 1.5 the width
+        return (mRandom.nextDouble() * 0.7) + 1.0; // height will be 1.0 - 1.5 the width
     }
 
 }
