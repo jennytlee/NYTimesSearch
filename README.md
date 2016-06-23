@@ -35,7 +35,7 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-* Used the [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) library instead of RecyclerView for a more modern UI.
+* Used the [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) library instead of RecyclerView.
 
 ## Video Walkthrough
 
