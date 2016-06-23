@@ -135,12 +135,6 @@ public class StartActivity extends AppCompatActivity {
 
     // Search articles and replace the top articles / previous search results
     private void searchArticles(int page, final String query) {
-        if (topArticleAdapter.getItemCount() != 0) {
-            topArticleAdapter.clearData();
-        }
-        gvTopArticles.setAdapter(articleAdapter);
-
-
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
@@ -149,12 +143,11 @@ public class StartActivity extends AppCompatActivity {
         params.put("page", page);
         params.put("q", query);
 
+        gvTopArticles.setAdapter(articleAdapter);
+
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-                // in case of replacing top articles, replace adapter
-
 
                 try {
                     JSONArray results;
@@ -173,32 +166,33 @@ public class StartActivity extends AppCompatActivity {
                         }
                     }
 
-                    // endless scroll listener for searched articles
-                    gvTopArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-                        @Override
-                        public void onLoadMore(int page, int totalItemsCount) {
-                            customLoadMoreSearchResults(page, query);
-                        }
-                    });
-
-                    // click listener for searched articles
-                    articleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View itemView, int position) {
-                            // create an intent to display
-                            Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                            // get the article to display
-                            Article article = articles.get(position);
-                            // pass in the article to intent
-                            i.putExtra("article", article);
-                            // launch the activity
-                            startActivity(i);
-                        }
-                    });
-
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
+            }
+
+                // endless scroll listener for searched articles
+                gvTopArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+                    @Override
+                    public void onLoadMore(int page, int totalItemsCount) {
+                        customLoadMoreSearchResults(page, query);
+                    }
+                });
+
+                // click listener for searched articles
+                articleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View itemView, int position) {
+                        // create an intent to display
+                        Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+                        // get the article to display
+                        Article article = articles.get(position);
+                        // pass in the article to intent
+                        i.putExtra("article", article);
+                        // launch the activity
+                        startActivity(i);
+                    }
+                });
+
             }
 
             @Override
@@ -207,6 +201,7 @@ public class StartActivity extends AppCompatActivity {
             }
         });
     }
+
 
     // Append more data into the top articles adapter
     public void customLoadMoreDataFromApi(int offset) {
@@ -274,6 +269,7 @@ public class StartActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
+
         });
     }
 
@@ -287,10 +283,14 @@ public class StartActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                topArticleAdapter.clearData();
+                articleAdapter.clearData();
+
                 // perform query here
-                searchArticles(0, query);
                 searchView.clearFocus();
 
+                searchArticles(0, query);
                 return true;
             }
 

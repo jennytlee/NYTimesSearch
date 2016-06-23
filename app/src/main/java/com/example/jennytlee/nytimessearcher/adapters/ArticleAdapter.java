@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.jennytlee.nytimessearcher.R;
 import com.example.jennytlee.nytimessearcher.models.Article;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         String thumbnailT = article.getThumbnail();
 
         if (!TextUtils.isEmpty(thumbnailT)) {
-            Picasso.with(getContext()).load(article.thumbnail).resize(600, 600).centerCrop().into(viewHolder.ivThumbnail);
+            Glide.with(getContext()).load(article.thumbnail).fitCenter().into(viewHolder.ivThumbnail);
         }
     }
 
