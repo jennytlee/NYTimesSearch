@@ -15,7 +15,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 * [x] Used the **ActionBar SearchView** or custom layout as the query box
-* [ ] User can **share an article link** to their friends or email it to themselves
+* [x] User can **share an article link** to their friends or email it to themselves
 * [x] Improved the user interface and experiment with image assets and/or styling and coloring
 * [ ] User can click on "settings" which allows selection of **advanced search options** to filter results
   * [ ] User can configure advanced search filters such as:
