@@ -30,12 +30,12 @@ The following **optional** features are implemented:
 * [x] Use Parcelable instead of Serializable leveraging the popular [Parceler library](http://guides.codepath.com/android/Using-Parceler).
 * [x] Replace Picasso with [Glide](http://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) for more efficient image rendering.
 * [x] Before an article search is triggered by the user, displays the current top stories of the day by default.
-* [ ] Hides the `Toolbar` at the top as the user scrolls down through the results using the [CoordinatorLayout and AppBarLayout](http://guides.codepath.com/android/Using-the-App-ToolBar#reacting-to-scroll).
+* [x] Hides the `Toolbar` at the top as the user scrolls down through the results using the [CoordinatorLayout and AppBarLayout](http://guides.codepath.com/android/Using-the-App-ToolBar#reacting-to-scroll).
 * [ ] Leverage the popular [GSON library](http://guides.codepath.com/android/Using-Android-Async-Http-Client#decoding-with-gson-library) to streamline the parsing of JSON data and avoid manual parsing.
 
 The following **additional** features are implemented:
 
-* Used the [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) library instead of RecyclerView.
+* Added pull down to refresh on top articles page.
 
 ## Video Walkthrough
 
@@ -52,8 +52,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Open-source libraries used
 
 - [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
-- [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
-- [Android Staggered Grid](https://github.com/etsy/AndroidStaggeredGrid) - Staggered Grid View, modified.
+- [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android.
 - [Glide](https://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) - Better image loading
 - [Butterknife](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) - Reduced boilerplate.
 
