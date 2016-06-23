@@ -9,14 +9,16 @@
     tools:showIn="@layout/activity_start">
 
 
-    <com.etsy.android.grid.StaggeredGridView
+    <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/gvTopArticles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:item_margin="8dp"
         app:column_count="2"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -1,21 +1,19 @@
 package com.example.jennytlee.nytimessearcher.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.etsy.android.grid.util.DynamicHeightImageView;
-import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.example.jennytlee.nytimessearcher.R;
 import com.example.jennytlee.nytimessearcher.models.TopArticle;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-import java.util.Random;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,26 +21,87 @@ import butterknife.ButterKnife;
 /**
  * Created by jennytlee on 6/21/16.
  */
-public class TopArticleAdapter extends ArrayAdapter<TopArticle> {
+public class TopArticleAdapter extends RecyclerView.Adapter<TopArticleAdapter.ViewHolder> {
 
-    Random mRandom;
-    private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
+    ArrayList<TopArticle> topArticles;
+    Context mContext;
+    private static OnItemClickListener listener;
 
-    public TopArticleAdapter(Context context, List<TopArticle> topArticles) {
-        super(context, android.R.layout.simple_list_item_1, topArticles);
-        mRandom = new Random();
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
     }
 
-    public static class ViewHolder {
-        @BindView(R.id.tvTopHeadline) DynamicHeightTextView tvHeadline;
-        @BindView(R.id.ivTopThumbnail) DynamicHeightImageView ivThumbnail;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.tvTopHeadline) TextView tvHeadline;
+        @BindView(R.id.ivTopThumbnail) ImageView ivThumbnail;
 
         public ViewHolder(View view) {
+            super(view);
             ButterKnife.bind(this, view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
+        }
+    }
+
+    public TopArticleAdapter(Context context, ArrayList<TopArticle> articles) {
+        topArticles = articles;
+        mContext = context;
+    }
+
+    private Context getContext() {
+        return mContext;
+    }
+
+    @Override
+    public TopArticleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        View articleView = inflater.inflate(R.layout.item_article, parent, false);
+        ViewHolder viewHolder = new ViewHolder(articleView);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(TopArticleAdapter.ViewHolder viewHolder, int position) {
+        TopArticle topArticle = topArticles.get(position);
+
+        viewHolder.tvHeadline.setText(topArticle.getHeadline());
+
+        String thumbnailT = topArticle.getThumbnail();
+
+        if (!TextUtils.isEmpty(thumbnailT)) {
+            Picasso.with(getContext()).load(topArticle.thumbnail).resize(600, 600).centerCrop().into(viewHolder.ivThumbnail);
         }
     }
 
     @Override
+    public int getItemCount() {
+        return topArticles.size();
+    }
+
+    public void clearData() {
+        topArticles.clear(); //clear list
+        this.notifyDataSetChanged(); //let your adapter know about the changes and reload view.
+    }
+
+    public void addItem(TopArticle article) {
+        topArticles.add(article);
+        this.notifyDataSetChanged();
+    }
+
+    /*   @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         TopArticle topArticle = getItem(position);
         ViewHolder viewholder;
@@ -67,7 +126,6 @@ public class TopArticleAdapter extends ArrayAdapter<TopArticle> {
         return convertView;
 
     }
-
     private double getPositionRatio(final int position) {
         double ratio = sPositionHeightRatios.get(position, 0.0);
         // if not yet done generate and stash the columns height
@@ -84,5 +142,5 @@ public class TopArticleAdapter extends ArrayAdapter<TopArticle> {
     private double getRandomHeightRatio() {
         return (mRandom.nextDouble() * 0.7) + 1.0; // height will be 1.0 - 1.5 the width
     }
-
+*/
 }

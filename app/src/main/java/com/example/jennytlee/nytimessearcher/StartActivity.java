@@ -4,16 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
-import com.etsy.android.grid.StaggeredGridView;
 import com.example.jennytlee.nytimessearcher.adapters.ArticleAdapter;
 import com.example.jennytlee.nytimessearcher.adapters.TopArticleAdapter;
 import com.example.jennytlee.nytimessearcher.models.Article;
@@ -34,11 +33,11 @@ import cz.msebera.android.httpclient.Header;
 
 public class StartActivity extends AppCompatActivity {
 
-    @BindView(R.id.gvTopArticles) StaggeredGridView gvTopArticles;
+    @BindView(R.id.gvTopArticles) RecyclerView gvTopArticles;
 
     ArrayList<TopArticle> topArticles;
     TopArticleAdapter topArticleAdapter;
-    LinearLayoutManager linearLayoutManager;
+    StaggeredGridLayoutManager layoutManager;
 
     ArrayList<Article> articles;
     ArticleAdapter articleAdapter;
@@ -67,21 +66,20 @@ public class StartActivity extends AppCompatActivity {
         topArticleAdapter = new TopArticleAdapter(this, topArticles);
         articles = new ArrayList<>();
         articleAdapter = new ArticleAdapter(this, articles);
-        linearLayoutManager = new LinearLayoutManager(this);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
         // endless scroll listener for top articles
-        gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
+        gvTopArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
+            public void onLoadMore(int page, int totalItemsCount) {
                 customLoadMoreDataFromApi(page);
-                return true;
             }
         });
 
         // click listener for top articles
-        gvTopArticles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        topArticleAdapter.setOnItemClickListener(new TopArticleAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(View itemView, int position) {
                 // create an intent to display
                 Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
                 // get the article to display
@@ -95,6 +93,7 @@ public class StartActivity extends AppCompatActivity {
 
         // initialize adapter for top articles
         gvTopArticles.setAdapter(topArticleAdapter);
+        gvTopArticles.setLayoutManager(layoutManager);
     }
 
 
@@ -115,12 +114,11 @@ public class StartActivity extends AppCompatActivity {
                     if (response != null) {
                         results = response.getJSONArray("results");
                         ArrayList<TopArticle> articles = TopArticle.fromJSONArray(results);
-                        topArticleAdapter.clear();
+                        topArticleAdapter.clearData();
 
                         for (TopArticle article : articles) {
-                            topArticleAdapter.add(article);
+                            topArticleAdapter.addItem(article);
                         }
-                        topArticleAdapter.notifyDataSetChanged();
 
                     }
                 } catch (JSONException e) {
@@ -137,6 +135,11 @@ public class StartActivity extends AppCompatActivity {
 
     // Search articles and replace the top articles / previous search results
     private void searchArticles(int page, final String query) {
+        if (topArticleAdapter.getItemCount() != 0) {
+            topArticleAdapter.clearData();
+        }
+        gvTopArticles.setAdapter(articleAdapter);
+
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -149,36 +152,39 @@ public class StartActivity extends AppCompatActivity {
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                JSONArray articleJsonResults = null;
+
+                // in case of replacing top articles, replace adapter
+
 
                 try {
-                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    JSONArray results;
 
-                    // in case of replacing top articles, replace adapter
-                    if (!topArticleAdapter.isEmpty()) {
-                        topArticleAdapter.clear();
-                    }
-                    gvTopArticles.setAdapter(articleAdapter);
-                    // in case adapter is not empty, clear adapter (reset search)
-                    if (!articleAdapter.isEmpty()) {
-                        articleAdapter.clear();
-                    }
+                    if (response != null) {
+                        results = response.getJSONObject("response").getJSONArray("docs");
+                        ArrayList<Article> articles = Article.fromJSONArray(results);
 
-                    articleAdapter.addAll(Article.fromJSONArray(articleJsonResults));
+                        // in case adapter is not empty, clear adapter (reset search)
+                        if (articleAdapter.getItemCount() != 0) {
+                            articleAdapter.clearData();
+                        }
+
+                        for (Article article : articles) {
+                            articleAdapter.addItem(article);
+                        }
+                    }
 
                     // endless scroll listener for searched articles
-                    gvTopArticles.setOnScrollListener(new EndlessScrollListener() {
+                    gvTopArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
                         @Override
-                        public boolean onLoadMore(int page, int totalItemsCount) {
+                        public void onLoadMore(int page, int totalItemsCount) {
                             customLoadMoreSearchResults(page, query);
-                            return true;
                         }
                     });
 
                     // click listener for searched articles
-                    gvTopArticles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    articleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
                         @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        public void onItemClick(View itemView, int position) {
                             // create an intent to display
                             Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
                             // get the article to display
@@ -220,9 +226,8 @@ public class StartActivity extends AppCompatActivity {
                         ArrayList<TopArticle> articles = TopArticle.fromJSONArray(results);
 
                         for (TopArticle article : articles) {
-                            topArticleAdapter.add(article);
+                            topArticleAdapter.addItem(article);
                         }
-                        topArticleAdapter.notifyDataSetChanged();
 
                     }
                 } catch (JSONException e) {
@@ -256,9 +261,8 @@ public class StartActivity extends AppCompatActivity {
                         ArrayList<Article> articles = Article.fromJSONArray(articleJsonResults);
 
                         for (Article article : articles) {
-                            articleAdapter.add(article);
+                            articleAdapter.addItem(article);
                         }
-                        articleAdapter.notifyDataSetChanged();
 
                     }
                 } catch (JSONException e) {

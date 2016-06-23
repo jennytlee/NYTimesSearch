@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-    <com.etsy.android.grid.util.DynamicHeightImageView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ivTopThumbnail"
         android:src="@drawable/nytimes"
-        android:scaleType="center"/>
+        android:scaleType="centerCrop"/>
 
-    <com.etsy.android.grid.util.DynamicHeightTextView
+    <TextView
         android:id="@+id/tvTopHeadline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
