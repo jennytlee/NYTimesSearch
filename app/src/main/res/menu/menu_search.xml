@@ -11,6 +11,13 @@
         android:orderInCategory="5"
         android:icon="@android:drawable/ic_menu_more"
         app:showAsAction="ifRoom|collapseActionView" />
+    <item
+        android:id="@+id/miActionProgress"
+        android:title="Loading..."
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        app:actionLayout="@layout/action_view_progress" />
 
 
 </menu>

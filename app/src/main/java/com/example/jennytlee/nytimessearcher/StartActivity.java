@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.jennytlee.nytimessearcher.adapters.ArticleAdapter;
 import com.example.jennytlee.nytimessearcher.adapters.TopArticleAdapter;
@@ -41,6 +42,7 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
     RecyclerView gvTopArticles;
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeContainer;
+    MenuItem miActionProgressItem;
 
     ArrayList<TopArticle> topArticles;
     TopArticleAdapter topArticleAdapter;
@@ -118,6 +120,25 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
         gvTopArticles.setLayoutManager(layoutManager);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        // Extract the action-view from the menu item
+        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
+    }
 
     // Load top articles on start up of the app
     private void loadArticles(int page) {
@@ -152,8 +173,8 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }
@@ -162,8 +183,6 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
     private void searchArticles(int page, final String query, SearchFilters filter) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
-
-        savedQuery = query;
 
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
@@ -189,9 +208,11 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
 
         gvTopArticles.setAdapter(articleAdapter);
 
+        showProgressBar();
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                hideProgressBar();
 
                 try {
                     JSONArray results;
@@ -240,8 +261,9 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                hideProgressBar();
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }
@@ -275,8 +297,8 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }
@@ -313,8 +335,8 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
 
         });
@@ -375,6 +397,7 @@ public class StartActivity extends AppCompatActivity implements SearchFilterDial
         // 1. Access the updated filters here and store them in member variable
         // 2. Initiate a fresh search with these filters updated and same query value
 
+        articleAdapter.clearData();
         searchArticles(0, savedQuery, filters);
 
     }
