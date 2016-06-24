@@ -37,6 +37,7 @@ The following **additional** features are implemented:
 
 * Added pull down to refresh on top articles page.
 * Added more newsdesk options
+* Added progress bar to appear while search results are loading
 
 ## Video Walkthrough
 
