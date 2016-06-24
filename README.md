@@ -22,7 +22,7 @@ The following **optional** features are implemented:
     * [x] Begin Date (using a date picker)
     * [x] News desk values (Arts, Fashion & Style, Sports)
     * [x] Sort order (oldest or newest)
-  * [ ] Subsequent searches have any selected filters applied to the results
+  * [x] Subsequent searches have any selected filters applied to the results
   * [x] Uses a lightweight modal dialog for filters rather than an activity
 * [x] Replaces the default ActionBar with a [Toolbar](http://guides.codepath.com/android/Using-the-App-ToolBar).
 * [x] Apply the popular [Butterknife annotation library](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) to reduce view boilerplate.
