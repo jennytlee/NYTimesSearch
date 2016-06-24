@@ -17,13 +17,13 @@ The following **optional** features are implemented:
 * [x] Used the **ActionBar SearchView** or custom layout as the query box
 * [x] User can **share an article link** to their friends or email it to themselves
 * [x] Improved the user interface and experiment with image assets and/or styling and coloring
-* [ ] User can click on "settings" which allows selection of **advanced search options** to filter results
-  * [ ] User can configure advanced search filters such as:
-    * [ ] Begin Date (using a date picker)
-    * [ ] News desk values (Arts, Fashion & Style, Sports)
-    * [ ] Sort order (oldest or newest)
+* [x] User can click on "settings" which allows selection of **advanced search options** to filter results
+  * [x] User can configure advanced search filters such as:
+    * [x] Begin Date (using a date picker)
+    * [x] News desk values (Arts, Fashion & Style, Sports)
+    * [x] Sort order (oldest or newest)
   * [ ] Subsequent searches have any selected filters applied to the results
-  * [ ] Uses a lightweight modal dialog for filters rather than an activity
+  * [x] Uses a lightweight modal dialog for filters rather than an activity
 * [x] Replaces the default ActionBar with a [Toolbar](http://guides.codepath.com/android/Using-the-App-ToolBar).
 * [x] Apply the popular [Butterknife annotation library](http://guides.codepath.com/android/Reducing-View-Boilerplate-with-Butterknife) to reduce view boilerplate.
 * [x] Replace `GridView` with the [RecyclerView](http://guides.codepath.com/android/Using-the-RecyclerView) and the `StaggeredGridLayoutManager` to improve the grid of image results displayed.
@@ -36,6 +36,7 @@ The following **optional** features are implemented:
 The following **additional** features are implemented:
 
 * Added pull down to refresh on top articles page.
+* Added more newsdesk options
 
 ## Video Walkthrough
 
