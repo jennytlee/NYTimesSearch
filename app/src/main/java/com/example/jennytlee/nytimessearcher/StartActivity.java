@@ -2,6 +2,7 @@ package com.example.jennytlee.nytimessearcher;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,9 @@ import android.view.View;
 
 import com.example.jennytlee.nytimessearcher.adapters.ArticleAdapter;
 import com.example.jennytlee.nytimessearcher.adapters.TopArticleAdapter;
+import com.example.jennytlee.nytimessearcher.dialogs.SearchFilterDialogFragment;
 import com.example.jennytlee.nytimessearcher.models.Article;
+import com.example.jennytlee.nytimessearcher.models.SearchFilters;
 import com.example.jennytlee.nytimessearcher.models.TopArticle;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -32,10 +35,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class StartActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity implements SearchFilterDialogFragment.OnFilterSearchListener{
 
-    @BindView(R.id.gvTopArticles) RecyclerView gvTopArticles;
-    @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.gvTopArticles)
+    RecyclerView gvTopArticles;
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
 
     ArrayList<TopArticle> topArticles;
     TopArticleAdapter topArticleAdapter;
@@ -43,6 +48,9 @@ public class StartActivity extends AppCompatActivity {
 
     ArrayList<Article> articles;
     ArticleAdapter articleAdapter;
+
+    SearchFilters mfilters;
+    String savedQuery;
 
     public static final String API_KEY = "0be89842a4dc4f99ba0d5aa314659d4d";
 
@@ -54,6 +62,7 @@ public class StartActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        mfilters = new SearchFilters();
         setupViews();
         loadArticles(0);
 
@@ -150,14 +159,33 @@ public class StartActivity extends AppCompatActivity {
     }
 
     // Search articles and replace the top articles / previous search results
-    private void searchArticles(int page, final String query) {
+    private void searchArticles(int page, final String query, SearchFilters filter) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+
+        savedQuery = query;
 
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", page);
         params.put("q", query);
+
+        if (filter != null) {
+            String date = filter.getBeginDate();
+            String sort = filter.getSort();
+            String newsDesks = filter.getNewsDesks();
+
+            params.put("sort", sort);
+
+            if (!newsDesks.equals("news_desk:()")) {
+                params.put("fq", filter);
+            }
+
+            if (!date.equals("")) {
+                params.put("begin_date", date);
+            }
+
+        }
 
         gvTopArticles.setAdapter(articleAdapter);
 
@@ -184,7 +212,7 @@ public class StartActivity extends AppCompatActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-            }
+                }
 
                 // endless scroll listener for searched articles
                 gvTopArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -257,10 +285,13 @@ public class StartActivity extends AppCompatActivity {
     public void customLoadMoreSearchResults(int offset, String query) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+
+
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", offset);
         params.put("q", query);
+
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -296,9 +327,12 @@ public class StartActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                savedQuery = query;
 
                 topArticleAdapter.clearData();
                 articleAdapter.clearData();
@@ -306,7 +340,7 @@ public class StartActivity extends AppCompatActivity {
                 // perform query here
                 searchView.clearFocus();
 
-                searchArticles(0, query);
+                searchArticles(0, query, null);
                 return true;
             }
 
@@ -315,9 +349,33 @@ public class StartActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.filter) {
+            showFiltersDialog();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 
+    public void showFiltersDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        SearchFilterDialogFragment filtersDialogFragment =
+                SearchFilterDialogFragment.newInstance(mfilters);
+        filtersDialogFragment.show(fm, "fragment_search_filter");
+    }
+
+    public void onUpdateFilters(SearchFilters filters) {
+        // 1. Access the updated filters here and store them in member variable
+        // 2. Initiate a fresh search with these filters updated and same query value
+
+        searchArticles(0, savedQuery, filters);
+
+    }
 }

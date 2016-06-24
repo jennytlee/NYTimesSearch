@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Search Filters"
+        android:id="@+id/tvSubtitle"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/textDate"
+        android:id="@+id/tvDate"
+        android:layout_below="@+id/tvSubtitle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/etDate"
+        android:inputType="date"
+        android:focusable="false"
+        android:layout_alignBaseline="@+id/tvDate"
+        android:layout_toRightOf="@+id/tvDate"
+        android:layout_toEndOf="@id/tvDate"
+        android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/textOrder"
+        android:id="@+id/tvOrder"
+        android:layout_below="@+id/tvDate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner"
+        android:entries="@array/order_array"
+        android:layout_below="@+id/etDate"
+        android:layout_toRightOf="@+id/tvDate"
+        android:layout_toEndOf="@id/tvDate"
+        android:spinnerMode="dialog"
+        android:layout_alignRight="@+id/etDate"
+        android:layout_alignEnd="@+id/etDate"
+        android:layout_alignBaseline="@id/tvOrder"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/textCat"
+        android:layout_below="@id/tvOrder"
+        android:id="@+id/tvCategories"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_Business"
+        android:text="@string/business"
+        android:layout_below="@+id/tvCategories"
+        android:layout_alignLeft="@+id/tvCategories"
+        android:layout_alignStart="@+id/tvCategories" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_Entertainment"
+        android:text="@string/entertainment"
+        android:layout_below="@+id/checkbox_opinion"
+        android:layout_alignLeft="@+id/checkbox_Business" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_food"
+        android:text="@string/food"
+        android:layout_below="@+id/checkbox_Business"
+        android:layout_alignLeft="@+id/checkbox_Business"
+        android:layout_alignStart="@+id/checkbox_Business" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_health"
+        android:text="@string/health"
+        android:layout_below="@+id/checkbox_food"
+        android:layout_alignLeft="@+id/checkbox_Business" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_opinion"
+        android:text="@string/opinion"
+        android:layout_below="@+id/checkbox_health"
+        android:layout_alignLeft="@+id/checkbox_Business" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_politics"
+        android:text="@string/politics"
+        android:layout_below="@+id/checkbox_Entertainment"
+        android:layout_alignRight="@+id/checkbox_opinion"
+        android:layout_alignEnd="@+id/checkbox_opinion" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_science"
+        android:text="@string/science"
+        android:layout_below="@+id/tvCategories"
+        android:layout_alignLeft="@+id/checkbox_sports"
+        android:layout_alignStart="@+id/checkbox_sports"
+        android:layout_toRightOf="@id/checkbox_Business"
+        android:layout_toEndOf="@id/checkbox_Business"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="55dp"
+        android:layout_marginStart="55dp"
+        android:id="@+id/checkbox_sports"
+        android:text="@string/sports"
+        android:layout_below="@+id/checkbox_science"
+        android:layout_toRightOf="@+id/checkbox_food"
+        android:layout_toEndOf="@id/checkbox_food"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_style"
+        android:text="@string/style"
+        android:layout_below="@+id/checkbox_sports"
+        android:layout_alignLeft="@+id/checkbox_sports"
+        android:layout_alignStart="@+id/checkbox_sports" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_Tech"
+        android:text="@string/tech"
+        android:layout_below="@+id/checkbox_style"
+        android:layout_alignLeft="@+id/checkbox_sports"
+        android:layout_alignStart="@+id/checkbox_sports" />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_travel"
+        android:text="@string/travel"
+        android:layout_below="@+id/checkbox_Tech"
+        android:layout_alignLeft="@+id/checkbox_sports"
+        android:layout_alignStart="@+id/checkbox_sports" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:id="@+id/btnSave"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/checkbox_politics"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
